@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Product",
+    "description": "Shopee-like product model"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "productName": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "text"
+    },
+    "basePrice": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "productName",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "variants": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.variant"
+    }
+  }
+}
