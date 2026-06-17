@@ -20,7 +20,10 @@ services:
       - key: CLOUDINARY_SECRET
         sync: false
       - key: STRAPI_ADMIN_BACKEND_URL
-        value: https://shopee-backend.onrender.com
+        fromRoute:
+          type: web
+          name: shopee-backend
+          property: url
       - key: APP_KEYS
         generateValue: true
       - key: API_TOKEN_SALT
