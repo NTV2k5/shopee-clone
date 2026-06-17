@@ -8,20 +8,21 @@ Dự án Shopee Clone được xây dựng với Next.js (Frontend) và Strapi (
 
 ## Hướng dẫn chạy local
 
-### 1. Backend (Strapi)
+### 1. Backend (Strapi 5)
 1. Truy cập thư mục backend: `cd backend`
-2. Tạo file `.env` từ `.env.example` (nếu có) và điền thông tin Cloudinary:
+2. Tạo file `.env` từ `.env.example` (nếu có) và điền thông tin:
    ```
    CLOUDINARY_NAME=your_name
    CLOUDINARY_KEY=your_key
    CLOUDINARY_SECRET=your_secret
+   DATABASE_FILENAME=.tmp/data_ecommerce.db
    ```
 3. Cài đặt dependency: `npm install`
 4. Chạy development: `npm run develop`
 5. Tạo tài khoản admin tại `http://localhost:1337/admin`.
 6. Vào **Settings -> API Tokens** và tạo một Full Access token nếu cần (hiện tại dự án đang config API public).
 
-### 2. Frontend (Next.js)
+### 2. Frontend (Next.js 16.2.6 + React 19.2)
 1. Truy cập thư mục frontend: `cd frontend`
 2. Tạo file `.env.local`:
    ```

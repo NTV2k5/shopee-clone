@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Trash2, Upload, Loader2 } from 'lucide-react';
 import { strapi } from '@/lib/strapi';
 import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/auth';
+import { useEffect } from 'react';
 
 const variantSchema = z.object({
   variantName: z.string().min(1, 'Variant name is required'),
@@ -33,6 +35,33 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(initialData?.image?.url || '');
   const router = useRouter();
+
+  useEffect(() => {
+    const user = auth.getUser();
+    
+    const isSeller = (u?: any) => {
+      if (!u) return false;
+      const role = u.role;
+      const roleName = (typeof role === 'object' ? role?.name : '')?.toLowerCase()?.trim() || '';
+      const roleType = (typeof role === 'object' ? role?.type : role)?.toString()?.toLowerCase()?.trim() || '';
+      const username = u.username?.toLowerCase()?.trim() || '';
+      
+      return roleName === 'seller' || 
+             roleType === 'seller' || 
+             roleName === 'manager' || 
+             roleType === 'manager' ||
+             roleName === 'admin' ||
+             roleType === 'admin' ||
+             username === 'admin';
+    };
+
+    if (!user) {
+      router.push('/login?callback=/products/create');
+    } else if (!isSeller(user)) {
+      alert('Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản Người bán/Quản lý.');
+      router.push('/');
+    }
+  }, [router]);
 
   const {
     register,
@@ -62,7 +91,16 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
     }
   };
 
+  const onRemoveImage = () => {
+    setImage(null);
+    setImagePreview(initialData?.image?.url || '');
+    // Reset file input if needed
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
   const onSubmit = async (data: ProductFormValues) => {
+    console.log('Form Submitted Data:', data);
     setLoading(true);
     try {
       let imageId = initialData?.image?.id;
@@ -76,9 +114,20 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
       }
 
       // 2. Create/Update product
+      const slug = data.productName
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[đĐ]/g, 'd')
+        .replace(/([^0-9a-z-\s])/g, '')
+        .replace(/(\s+)/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
       const payload = {
         data: {
           ...data,
+          slug: slug,
           image: imageId,
         },
       };
@@ -144,18 +193,37 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Product Image</label>
           <div className="flex items-center gap-4">
-            <div className="relative w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
+            <div className="relative w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50 group">
               {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <div className="relative w-full h-full">
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onRemoveImage();
+                      }}
+                      className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition shadow-lg z-50 cursor-pointer"
+                      title="Xóa ảnh"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <Upload className="w-8 h-8 text-gray-400" />
+                <>
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={onImageChange}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                  />
+                </>
               )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onImageChange}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
             </div>
             <p className="text-xs text-gray-500">
               Accepted formats: JPG, PNG, WEBP. Max size: 2MB.
@@ -208,13 +276,18 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="p-2 text-gray-400 hover:text-red-500 self-center"
+                  disabled={fields.length <= 1}
+                  className="p-2 text-gray-400 hover:text-red-500 self-center disabled:opacity-30 disabled:cursor-not-allowed"
+                  title={fields.length <= 1 ? "Cannot delete the last variant" : "Delete variant"}
                 >
                   <Trash2 size={18} />
                 </button>
               </div>
             ))}
           </div>
+
+          {/* Realtime Summary */}
+          <VariantSummary control={control} />
         </div>
       </div>
 
@@ -236,5 +309,27 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
         </button>
       </div>
     </form>
+  );
+}
+function VariantSummary({ control }: { control: any }) {
+  const variants = useWatch({
+    control,
+    name: "variants",
+  });
+
+  const totalVariants = variants?.length || 0;
+  const totalStock = variants?.reduce((acc: number, curr: any) => acc + (Number(curr?.stock) || 0), 0) || 0;
+
+  return (
+    <div className="flex gap-6 p-4 bg-orange-50 border border-orange-100 rounded-md text-sm">
+      <div className="flex items-center gap-2">
+        <span className="text-gray-500 text-xs uppercase font-semibold">Total Variants:</span>
+        <span className="text-shopee-primary font-bold text-base">{totalVariants}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-gray-500 text-xs uppercase font-semibold">Total Stock:</span>
+        <span className="text-shopee-primary font-bold text-base">{totalStock.toLocaleString()}</span>
+      </div>
+    </div>
   );
 }

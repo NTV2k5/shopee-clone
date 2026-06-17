@@ -2,9 +2,13 @@ import axios from 'axios';
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || 'http://localhost:1337/api';
+const API_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
 
 export const strapi = axios.create({
   baseURL: API_URL,
+  headers: API_TOKEN ? {
+    Authorization: `Bearer ${API_TOKEN}`,
+  } : {},
 });
 
 export const getImageUrl = (url: string) => {
