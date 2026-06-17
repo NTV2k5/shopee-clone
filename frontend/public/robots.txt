@@ -1,0 +1,23 @@
+# robots.txt - Shopee Clone
+# Hướng dẫn Googlebot và các crawler khác
+
+User-agent: *
+Allow: /
+Allow: /products/
+Allow: /products/*
+
+# Chặn các trang người dùng (không cần indexing)
+Disallow: /api/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /profile
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /change-password
+Disallow: /products/create
+
+# Sitemap location
+Sitemap: https://your-domain.com/sitemap.xml

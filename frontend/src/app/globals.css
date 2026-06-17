@@ -9,12 +9,6 @@
   --shopee-white: #ffffff;
 }
 
-body {
-  background-color: var(--shopee-bg);
-  color: var(--shopee-text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
 @theme {
   --color-shopee-primary: var(--shopee-primary);
   --color-shopee-secondary: var(--shopee-secondary);
@@ -23,41 +17,49 @@ body {
   --color-shopee-border: var(--shopee-border);
 }
 
-.shopee-button {
-  background-color: var(--shopee-primary);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 2px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  cursor: pointer;
-  border: none;
+body {
+  background-color: var(--shopee-bg);
+  color: var(--shopee-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.shopee-button:hover {
-  background-color: var(--shopee-secondary);
-}
+@layer components {
+  .shopee-button {
+    background-color: var(--shopee-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    border: none;
+  }
 
-.shopee-card {
-  background: white;
-  border-radius: 2px;
-  box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
+  .shopee-button:hover {
+    background-color: var(--shopee-secondary);
+  }
 
-.shopee-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 1px 20px 0 rgba(0,0,0,.05);
-}
+  .shopee-card {
+    background: white;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
 
-.shopee-input {
-  border: 1px solid var(--shopee-border);
-  padding: 0.5rem;
-  border-radius: 2px;
-  width: 100%;
-  outline: none;
-}
+  .shopee-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 20px 0 rgba(0,0,0,.05);
+  }
 
-.shopee-input:focus {
-  border-color: var(--shopee-primary);
+  .shopee-input {
+    border: 1px solid var(--shopee-border);
+    padding: 0.5rem;
+    border-radius: 2px;
+    width: 100%;
+    outline: none;
+  }
+
+  .shopee-input:focus {
+    border-color: var(--shopee-primary);
+  }
 }
