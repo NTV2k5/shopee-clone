@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 
 export default function CartClient() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { items, updateQuantity, removeItem } = useCartStore();
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -117,7 +117,10 @@ export default function CartClient() {
                     className="w-20 h-20 object-cover border"
                   />
                   <div className="flex flex-col justify-between">
-                    <Link href={`/products/${item.product.slug}`} className="text-gray-800 font-medium hover:text-shopee-primary line-clamp-2">
+                    <Link 
+                      href={i18n.language === 'vi' ? `/san-pham/${item.product.slug}` : `/products/${item.product.slug}`} 
+                      className="text-gray-800 font-medium hover:text-shopee-primary line-clamp-2"
+                    >
                       {item.product.productName}
                     </Link>
                     {item.variant && (

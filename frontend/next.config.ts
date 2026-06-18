@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/san-pham/:slug',
+        destination: '/products/:slug',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

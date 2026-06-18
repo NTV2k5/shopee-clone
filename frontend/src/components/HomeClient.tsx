@@ -12,7 +12,7 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ products, searchQuery }: HomeClientProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -37,11 +37,12 @@ export default function HomeClient({ products, searchQuery }: HomeClientProps) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {products.map((product: any) => {
             const imageUrl = getImageUrl(product.image?.url);
+            const productLink = i18n.language === 'vi' ? `/san-pham/${product.slug}` : `/products/${product.slug}`;
             
             return (
               <Link 
                 key={product.id} 
-                href={`/products/${product.slug}`}
+                href={productLink}
                 className="shopee-card block bg-white"
               >
                 <div className="aspect-square relative overflow-hidden bg-gray-100">

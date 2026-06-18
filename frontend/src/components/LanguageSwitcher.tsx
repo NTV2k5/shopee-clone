@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '@/lib/i18n/useTranslation';
 import { Globe, Check } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
 
 const LANGUAGES = [
   { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
@@ -14,6 +15,8 @@ export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     setIsMounted(true);
@@ -35,6 +38,16 @@ export default function LanguageSwitcher() {
   const handleChangeLanguage = (code: string) => {
     i18n.changeLanguage(code);
     document.documentElement.lang = code;
+    
+    // Smoothly replace URL pathname when switching languages on product detail page
+    if (code === 'vi' && pathname.startsWith('/products/') && pathname !== '/products/create') {
+      const newPath = pathname.replace('/products/', '/san-pham/');
+      router.replace(newPath);
+    } else if (code === 'en' && pathname.startsWith('/san-pham/')) {
+      const newPath = pathname.replace('/san-pham/', '/products/');
+      router.replace(newPath);
+    }
+    
     setIsOpen(false);
   };
 

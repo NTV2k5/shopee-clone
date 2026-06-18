@@ -3,6 +3,9 @@ import type { Metadata } from 'next';
 import { strapi, getImageUrl } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
+import { headers } from 'next/headers';
+import vi from '@/lib/i18n/locales/vi';
+import en from '@/lib/i18n/locales/en';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com';
 
@@ -39,26 +42,31 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
+  const headersList = await headers();
+  const locale = headersList.get('x-locale') || 'en';
 
   // Trả về metadata mặc định nếu không tìm thấy sản phẩm
   if (!product) {
     return {
-      title: 'Sản phẩm không tìm thấy',
-      description: 'Sản phẩm này không tồn tại hoặc đã bị xóa.',
+      title: locale === 'vi' ? 'Sản phẩm không tìm thấy' : 'Product Not Found',
+      description: locale === 'vi' ? 'Sản phẩm này không tồn tại hoặc đã bị xóa.' : 'This product does not exist or has been deleted.',
       robots: { index: false, follow: false }, // Không index trang 404
     };
   }
 
   const productName = product.productName;
-  const price = product.basePrice?.toLocaleString('vi-VN');
+  const price = product.basePrice?.toLocaleString(locale === 'vi' ? 'vi-VN' : 'en-US');
   const imageUrl = getImageUrl(product.image?.url);
 
   // Description: dùng description từ Strapi, fallback về template
   const description =
     (product.description?.replace(/<[^>]*>/g, '')?.slice(0, 155)) ||
-    `Mua ${productName} giá ₫${price}. Hàng chính hãng, giao hàng nhanh, bảo hành uy tín tại Shopee Clone.`;
+    (locale === 'vi'
+      ? `Mua ${productName} giá ₫${price}. Hàng chính hãng, giao hàng nhanh, bảo hành uy tín tại Shopee Clone.`
+      : `Buy ${productName} for ₫${price}. Authentic product, fast delivery, trusted warranty at Shopee Clone.`);
 
-  const productUrl = `${BASE_URL}/products/${slug}`;
+  const routePrefix = locale === 'vi' ? '/san-pham' : '/products';
+  const productUrl = `${BASE_URL}${routePrefix}/${slug}`;
 
   return {
     // Title: "iPhone 15 Pro Max 256GB - ₫29.990.000 | Shopee Clone"
@@ -66,13 +74,19 @@ export async function generateMetadata({
 
     description,
 
-    keywords: [
+    keywords: locale === 'vi' ? [
       productName,
       `mua ${productName}`,
       `${productName} giá rẻ`,
       `${productName} chính hãng`,
       'mua sắm online',
-    ].filter(Boolean),
+    ] : [
+      productName,
+      `buy ${productName}`,
+      `cheap ${productName}`,
+      `genuine ${productName}`,
+      'online shopping',
+    ],
 
     // ─── Open Graph (Facebook, Zalo share) ──────────────────────────
     openGraph: {
@@ -84,7 +98,7 @@ export async function generateMetadata({
         ? [{ url: imageUrl, width: 800, height: 800, alt: productName }]
         : [],
       siteName: 'Shopee Clone',
-      locale: 'vi_VN',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
     },
 
     // ─── Twitter Card ────────────────────────────────────────────────
@@ -99,6 +113,10 @@ export async function generateMetadata({
     // Tránh duplicate content từ các URL khác nhau của cùng sản phẩm
     alternates: {
       canonical: productUrl,
+      languages: {
+        'vi-VN': `${BASE_URL}/san-pham/${slug}`,
+        'en-US': `${BASE_URL}/products/${slug}`,
+      },
     },
 
     robots: {
@@ -121,8 +139,12 @@ export default async function ProductDetailPage({
     notFound();
   }
 
+  const headersList = await headers();
+  const locale = headersList.get('x-locale') || 'en';
+  const routePrefix = locale === 'vi' ? '/san-pham' : '/products';
+  const productUrl = `${BASE_URL}${routePrefix}/${slug}`;
+
   const imageUrl = getImageUrl(product.image?.url);
-  const productUrl = `${BASE_URL}/products/${slug}`;
 
   // ─── PRODUCT STRUCTURED DATA (JSON-LD) ──────────────────────────────────
   // Hiển thị Rich Snippet trên Google: giá, đánh giá, tình trạng hàng
@@ -152,14 +174,6 @@ export default async function ProductDetailPage({
         name: 'Shopee Clone',
       },
     },
-    // Thêm aggregateRating khi có dữ liệu review thực tế
-    // aggregateRating: {
-    //   '@type': 'AggregateRating',
-    //   ratingValue: product.rating || 4.5,
-    //   reviewCount: product.reviewCount || 0,
-    //   bestRating: 5,
-    //   worstRating: 1,
-    // },
   };
 
   // ─── BREADCRUMB STRUCTURED DATA ───────────────────────────────────────────
@@ -170,7 +184,7 @@ export default async function ProductDetailPage({
       {
         '@type': 'ListItem',
         position: 1,
-        name: 'Trang Chủ',
+        name: locale === 'vi' ? 'Trang Chủ' : 'Home',
         item: BASE_URL,
       },
       {
