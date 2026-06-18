@@ -134,7 +134,7 @@ export default function Header() {
               <ShoppingBag size={12} /> {t('header.sellerChannel')}
             </Link>
           )}
-          <Link href="/download" className="hover:text-white/80 transition border-l border-white/20 pl-4">{t('header.downloadApp')}</Link>
+          <Link href="/download" prefetch={false} className="hover:text-white/80 transition border-l border-white/20 pl-4">{t('header.downloadApp')}</Link>
           <div className="flex items-center gap-2 border-l border-white/20 pl-4">
             {t('header.connect')} 
             <span className="hover:text-white/80 cursor-pointer">FB</span>
