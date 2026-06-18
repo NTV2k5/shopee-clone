@@ -13,7 +13,6 @@ i18n
       en: { translation: en },
     },
     fallbackLng: 'en',
-    lng: 'en',
     interpolation: {
       escapeValue: false, // React already escapes
     },

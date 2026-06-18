@@ -42,10 +42,12 @@ export default function LanguageSwitcher() {
     // Smoothly replace URL pathname when switching languages on product detail page
     if (code === 'vi' && pathname.startsWith('/products/') && pathname !== '/products/create') {
       const newPath = pathname.replace('/products/', '/san-pham/');
-      router.replace(newPath);
+      window.history.replaceState(null, '', newPath);
+      router.refresh();
     } else if (code === 'en' && pathname.startsWith('/san-pham/')) {
       const newPath = pathname.replace('/san-pham/', '/products/');
-      router.replace(newPath);
+      window.history.replaceState(null, '', newPath);
+      router.refresh();
     }
     
     setIsOpen(false);
