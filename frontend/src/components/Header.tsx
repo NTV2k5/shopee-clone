@@ -11,7 +11,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation';
 import LanguageSwitcher from './LanguageSwitcher';
 
 export default function Header() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -130,7 +130,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 h-8 flex items-center justify-between text-xs font-light border-b border-white/10">
         <div className="flex items-center gap-4">
           {hasSellerAccess && (
-            <Link href="/products/create" className="hover:text-white/80 transition flex items-center gap-1.5 font-medium">
+            <Link href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} className="hover:text-white/80 transition flex items-center gap-1.5 font-medium">
               <ShoppingBag size={12} /> {t('header.sellerChannel')}
             </Link>
           )}
@@ -186,7 +186,7 @@ export default function Header() {
                      </Link>
                      {hasSellerAccess && (
                        <Link 
-                         href="/products/create" 
+                         href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} 
                          onClick={() => setIsMenuOpen(false)}
                          className="block px-4 py-2 hover:bg-gray-50 text-xs transition border-t border-gray-100 mt-1 font-medium text-shopee-primary"
                        >

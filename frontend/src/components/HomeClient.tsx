@@ -29,7 +29,7 @@ export default function HomeClient({ products, searchQuery }: HomeClientProps) {
             <ShoppingBag size={64} />
           </div>
           <p className="text-gray-600">{t('home.noProducts')}</p>
-          <Link href="/products/create" className="text-shopee-primary hover:underline mt-2 inline-block">
+          <Link href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} className="text-shopee-primary hover:underline mt-2 inline-block">
             {t('home.addFirstProduct')}
           </Link>
         </div>

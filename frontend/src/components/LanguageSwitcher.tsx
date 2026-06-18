@@ -40,7 +40,7 @@ export default function LanguageSwitcher() {
     document.documentElement.lang = code;
     
     // Smoothly replace URL pathname when switching languages on product detail page
-    if (code === 'vi' && pathname.startsWith('/products/') && pathname !== '/products/create') {
+    if (code === 'vi' && pathname.startsWith('/products/')) {
       const newPath = pathname.replace('/products/', '/san-pham/');
       window.history.replaceState(null, '', newPath);
       router.refresh();

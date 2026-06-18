@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: '/san-pham/create',
+        destination: '/products/create',
+      },
+      {
         source: '/san-pham/:slug',
         destination: '/products/:slug',
       },

@@ -15,10 +15,6 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
         document.documentElement.lang = 'vi';
       }
     } else if (pathname.startsWith('/products/')) {
-      // Avoid switching from products/create if that has a different behavior, 
-      // but let's check: products/create is also English/Vietnamese.
-      // But products/[slug] is definitely English.
-      if (pathname === '/products/create') return;
       if (i18n.language !== 'en') {
         i18n.changeLanguage('en');
         document.documentElement.lang = 'en';
