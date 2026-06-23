@@ -6,14 +6,14 @@ import { getImageUrl } from '@/lib/strapi';
 import { useCartStore } from '@/lib/store';
 import { auth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 interface ProductDetailProps {
   product: any;
 }
 
 export default function ProductDetailClient({ product }: ProductDetailProps) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);

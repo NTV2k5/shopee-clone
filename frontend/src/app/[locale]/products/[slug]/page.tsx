@@ -1,11 +1,8 @@
-// src/app/products/[slug]/page.tsx
 import type { Metadata } from 'next';
 import { strapi, getImageUrl } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from '@/components/ProductDetailClient';
-import { headers } from 'next/headers';
-import vi from '@/lib/i18n/locales/vi';
-import en from '@/lib/i18n/locales/en';
+import { getPathname } from '@/i18n/navigation';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-domain.com';
 
@@ -21,29 +18,31 @@ async function getProductBySlug(slug: string) {
 }
 
 // ─── STATIC PARAMS (SSG Pre-rendering) ───────────────────────────────────────
-// Next.js sẽ pre-render TẤT CẢ trang sản phẩm lúc build.
-// Googlebot gặp HTML đầy đủ ngay → không cần chờ JS → tốt cho SEO
 export async function generateStaticParams() {
   try {
     const res = await strapi.get('/products?fields=slug&pagination[pageSize]=1000');
     const products = res.data.data;
-    return products.map((product: any) => ({ slug: product.slug }));
+    const locales = ['en', 'vi', 'zh', 'ja'];
+    
+    return products.flatMap((product: any) => 
+      locales.map((locale) => ({
+        locale,
+        slug: product.slug
+      }))
+    );
   } catch {
     return [];
   }
 }
 
 // ─── DYNAMIC METADATA ─────────────────────────────────────────────────────────
-// Mỗi trang sản phẩm có title/description/OG riêng → quan trọng cho SEO
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const product = await getProductBySlug(slug);
-  const headersList = await headers();
-  const locale = headersList.get('x-locale') || 'en';
 
   // Trả về metadata mặc định nếu không tìm thấy sản phẩm
   if (!product) {
@@ -65,15 +64,14 @@ export async function generateMetadata({
       ? `Mua ${productName} giá ₫${price}. Hàng chính hãng, giao hàng nhanh, bảo hành uy tín tại Shopee Clone.`
       : `Buy ${productName} for ₫${price}. Authentic product, fast delivery, trusted warranty at Shopee Clone.`);
 
-  const routePrefix = locale === 'vi' ? '/san-pham' : '/products';
-  const productUrl = `${BASE_URL}${routePrefix}/${slug}`;
+  const productUrl = `${BASE_URL}${getPathname({
+    href: { pathname: '/products/[slug]', params: { slug } },
+    locale: locale as any
+  })}`;
 
   return {
-    // Title: "iPhone 15 Pro Max 256GB - ₫29.990.000 | Shopee Clone"
     title: `${productName} - ₫${price}`,
-
     description,
-
     keywords: locale === 'vi' ? [
       productName,
       `mua ${productName}`,
@@ -110,12 +108,13 @@ export async function generateMetadata({
     },
 
     // ─── Canonical URL ───────────────────────────────────────────────
-    // Tránh duplicate content từ các URL khác nhau của cùng sản phẩm
     alternates: {
       canonical: productUrl,
       languages: {
-        'vi-VN': `${BASE_URL}/san-pham/${slug}`,
-        'en-US': `${BASE_URL}/products/${slug}`,
+        'en': `${BASE_URL}${getPathname({ href: { pathname: '/products/[slug]', params: { slug } }, locale: 'en' })}`,
+        'vi': `${BASE_URL}${getPathname({ href: { pathname: '/products/[slug]', params: { slug } }, locale: 'vi' })}`,
+        'zh': `${BASE_URL}${getPathname({ href: { pathname: '/products/[slug]', params: { slug } }, locale: 'zh' })}`,
+        'ja': `${BASE_URL}${getPathname({ href: { pathname: '/products/[slug]', params: { slug } }, locale: 'ja' })}`,
       },
     },
 
@@ -130,24 +129,23 @@ export async function generateMetadata({
 export default async function ProductDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const headersList = await headers();
-  const locale = headersList.get('x-locale') || 'en';
-  const routePrefix = locale === 'vi' ? '/san-pham' : '/products';
-  const productUrl = `${BASE_URL}${routePrefix}/${slug}`;
+  const productUrl = `${BASE_URL}${getPathname({
+    href: { pathname: '/products/[slug]', params: { slug } },
+    locale: locale as any
+  })}`;
 
   const imageUrl = getImageUrl(product.image?.url);
 
   // ─── PRODUCT STRUCTURED DATA (JSON-LD) ──────────────────────────────────
-  // Hiển thị Rich Snippet trên Google: giá, đánh giá, tình trạng hàng
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',

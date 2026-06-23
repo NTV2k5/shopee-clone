@@ -1,12 +1,12 @@
 'use client';
 
 import ProductForm from '@/components/ProductForm';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ChevronLeft } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
-export default function CreateProductPage() {
-  const { t } = useTranslation();
+export default function CreateProductClient() {
+  const t = useTranslations();
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">

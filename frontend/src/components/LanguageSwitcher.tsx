@@ -1,29 +1,26 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import React, { useState, useRef, useEffect, useTransition } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Globe, Check } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
+import { useParams } from 'next/navigation';
 
 const LANGUAGES = [
   { code: 'vi', label: 'Tiếng Việt', flag: '🇻🇳' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'zh', label: '中文', flag: '🇨🇳' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
 ];
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    setIsMounted(true);
-    if (i18n.language) {
-      document.documentElement.lang = i18n.language;
-    }
-  }, [i18n.language]);
+  const params = useParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -36,32 +33,19 @@ export default function LanguageSwitcher() {
   }, []);
 
   const handleChangeLanguage = (code: string) => {
-    i18n.changeLanguage(code);
-    document.documentElement.lang = code;
-    
-    // Smoothly replace URL pathname when switching languages on product detail page
-    if (code === 'vi' && pathname.startsWith('/products/')) {
-      const newPath = pathname.replace('/products/', '/san-pham/');
-      window.history.replaceState(null, '', newPath);
-      router.refresh();
-    } else if (code === 'en' && pathname.startsWith('/san-pham/')) {
-      const newPath = pathname.replace('/san-pham/', '/products/');
-      window.history.replaceState(null, '', newPath);
-      router.refresh();
-    }
-    
+    startTransition(() => {
+      router.replace({ pathname, params: params as any }, { locale: code });
+    });
     setIsOpen(false);
   };
 
-  const currentLang = isMounted
-    ? (LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0])
-    : LANGUAGES[0];
+  const currentLang = LANGUAGES.find((l) => l.code === locale) || LANGUAGES[0];
 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 hover:text-white/80 cursor-pointer transition"
+        className={`flex items-center gap-1 hover:text-white/80 cursor-pointer transition ${isPending ? 'opacity-60' : ''}`}
       >
         <Globe size={14} />
         <span>{currentLang.label}</span>
@@ -81,7 +65,7 @@ export default function LanguageSwitcher() {
                   <span className="text-sm">{lang.flag}</span>
                   {lang.label}
                 </span>
-                {isMounted && i18n.language === lang.code && (
+                {locale === lang.code && (
                   <Check size={14} className="text-shopee-primary" />
                 )}
               </button>

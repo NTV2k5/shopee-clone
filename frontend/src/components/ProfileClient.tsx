@@ -5,11 +5,11 @@ import { auth } from '@/lib/auth';
 import { strapi, getImageUrl } from '@/lib/strapi';
 import { useRouter } from 'next/navigation';
 import { User, FileText, Bell, Loader2 } from 'lucide-react';
-import Link from 'next/link';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ProfileClient() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [user, setUser] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

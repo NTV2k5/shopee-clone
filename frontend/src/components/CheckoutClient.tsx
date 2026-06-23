@@ -5,12 +5,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useCartStore } from '@/lib/store';
 import { getImageUrl, strapi } from '@/lib/strapi';
 import { auth } from '@/lib/auth';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MapPin, ReceiptText, Banknote } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 function CheckoutContent() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items, removeItem } = useCartStore();
@@ -254,7 +254,7 @@ function CheckoutContent() {
 }
 
 export default function CheckoutClient() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   return (
     <Suspense fallback={<div className="p-8 text-center">{t('checkout.loadingCheckout')}</div>}>
       <CheckoutContent />

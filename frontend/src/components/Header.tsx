@@ -1,25 +1,25 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Search, ShoppingCart, User, Bell, HelpCircle, LogOut, ShoppingBag } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import { strapi, getImageUrl } from '@/lib/strapi';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter as useNextRouter, usePathname as useNextPathname } from 'next/navigation';
 import { useCartStore } from '@/lib/store';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 import LanguageSwitcher from './LanguageSwitcher';
+import { Link } from '@/i18n/navigation';
 
 export default function Header() {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations();
   const [user, setUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = useNextRouter();
+  const pathname = useNextPathname();
   const { items, fetchFromDB, clearCart } = useCartStore();
 
-  const isAuthPage = ['/login', '/signup', '/forgot-password', '/change-password'].includes(pathname);
+  const isAuthPage = ['/login', '/signup', '/forgot-password', '/change-password'].some(p => pathname.endsWith(p));
   
   const isSeller = (u?: any) => {
     if (!u) {
@@ -102,8 +102,8 @@ export default function Header() {
   };
 
   const getAuthPageTitle = () => {
-    if (pathname === '/login') return t('header.loginTitle');
-    if (pathname === '/signup') return t('header.signupTitle');
+    if (pathname.endsWith('/login')) return t('header.loginTitle');
+    if (pathname.endsWith('/signup')) return t('header.signupTitle');
     return t('header.resetPasswordTitle');
   };
 
@@ -118,7 +118,7 @@ export default function Header() {
               {getAuthPageTitle()}
             </span>
           </Link>
-          <Link href="/help" className="text-shopee-primary text-sm">{t('header.needHelp')}</Link>
+          <Link href="/" className="text-shopee-primary text-sm">{t('header.needHelp')}</Link>
         </div>
       </header>
     );
@@ -130,11 +130,11 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 h-8 flex items-center justify-between text-xs font-light border-b border-white/10">
         <div className="flex items-center gap-4">
           {hasSellerAccess && (
-            <Link href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} className="hover:text-white/80 transition flex items-center gap-1.5 font-medium">
+            <Link href="/products/create" className="hover:text-white/80 transition flex items-center gap-1.5 font-medium">
               <ShoppingBag size={12} /> {t('header.sellerChannel')}
             </Link>
           )}
-          <Link href="/download" prefetch={false} className="hover:text-white/80 transition border-l border-white/20 pl-4">{t('header.downloadApp')}</Link>
+          <Link href="/" prefetch={false} className="hover:text-white/80 transition border-l border-white/20 pl-4">{t('header.downloadApp')}</Link>
           <div className="flex items-center gap-2 border-l border-white/20 pl-4">
             {t('header.connect')} 
             <span className="hover:text-white/80 cursor-pointer">FB</span>
@@ -186,7 +186,7 @@ export default function Header() {
                      </Link>
                      {hasSellerAccess && (
                        <Link 
-                         href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} 
+                         href="/products/create" 
                          onClick={() => setIsMenuOpen(false)}
                          className="block px-4 py-2 hover:bg-gray-50 text-xs transition border-t border-gray-100 mt-1 font-medium text-shopee-primary"
                        >

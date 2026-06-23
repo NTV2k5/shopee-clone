@@ -8,8 +8,7 @@ import { Plus, Trash2, Upload, Loader2 } from 'lucide-react';
 import { strapi } from '@/lib/strapi';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/auth';
-import { useTranslation } from '@/lib/i18n/useTranslation';
-
+import { useTranslations, useLocale } from 'next-intl';
 interface VariantValues {
   variantName: string;
   extraPrice: number;
@@ -29,7 +28,8 @@ interface ProductFormProps {
 }
 
 export default function ProductForm({ initialData, productId }: ProductFormProps) {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations();
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(initialData?.image?.url || '');
@@ -68,13 +68,13 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
     };
 
     if (!user) {
-      const callbackPath = i18n.language === 'vi' ? '/san-pham/create' : '/products/create';
+      const callbackPath = '/products/create';
       router.push(`/login?callback=${callbackPath}`);
     } else if (!isSeller(user)) {
       alert(t('productForm.alertSellerAccess'));
       router.push('/');
     }
-  }, [router, i18n.language, t]);
+  }, [router, locale, t]);
 
   const {
     register,
@@ -219,7 +219,7 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
                         onRemoveImage();
                       }}
                       className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition shadow-lg z-50 cursor-pointer"
-                      title={i18n.language === 'vi' ? 'Xóa ảnh' : 'Remove image'}
+                      title={locale === 'vi' ? 'Xóa ảnh' : 'Remove image'}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -325,7 +325,7 @@ export default function ProductForm({ initialData, productId }: ProductFormProps
   );
 }
 function VariantSummary({ control }: { control: any }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const variants = useWatch({
     control,
     name: "variants",

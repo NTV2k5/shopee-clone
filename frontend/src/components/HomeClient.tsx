@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { ShoppingBag } from 'lucide-react';
 import { getImageUrl } from '@/lib/strapi';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 interface HomeClientProps {
   products: any[];
@@ -12,15 +12,15 @@ interface HomeClientProps {
 }
 
 export default function HomeClient({ products, searchQuery }: HomeClientProps) {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations('home');
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* H1 important for SEO - only one H1 tag per page */}
       <h1 className="text-xl font-medium text-gray-800 mb-6 flex items-center gap-2 uppercase tracking-tight">
         {searchQuery
-          ? t('home.searchResult', { query: searchQuery })
-          : t('home.todaySuggestions')}
+          ? t('searchResult', { query: searchQuery })
+          : t('todaySuggestions')}
       </h1>
 
       {products.length === 0 ? (
@@ -28,21 +28,20 @@ export default function HomeClient({ products, searchQuery }: HomeClientProps) {
           <div className="text-gray-400 mb-4 flex justify-center">
             <ShoppingBag size={64} />
           </div>
-          <p className="text-gray-600">{t('home.noProducts')}</p>
-          <Link href={i18n.language === 'vi' ? '/san-pham/create' : '/products/create'} className="text-shopee-primary hover:underline mt-2 inline-block">
-            {t('home.addFirstProduct')}
+          <p className="text-gray-600">{t('noProducts')}</p>
+          <Link href="/products/create" className="text-shopee-primary hover:underline mt-2 inline-block">
+            {t('addFirstProduct')}
           </Link>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {products.map((product: any) => {
             const imageUrl = getImageUrl(product.image?.url);
-            const productLink = i18n.language === 'vi' ? `/san-pham/${product.slug}` : `/products/${product.slug}`;
             
             return (
               <Link 
                 key={product.id} 
-                href={productLink}
+                href={`/products/${product.slug}` as any}
                 className="shopee-card block bg-white"
               >
                 <div className="aspect-square relative overflow-hidden bg-gray-100">
@@ -66,7 +65,7 @@ export default function HomeClient({ products, searchQuery }: HomeClientProps) {
                     <span className="text-shopee-primary text-base font-medium">
                       ₫{product.basePrice.toLocaleString()}
                     </span>
-                    <span className="text-[10px] text-gray-400">{t('home.soldCount')}</span>
+                    <span className="text-[10px] text-gray-400">{t('soldCount')}</span>
                   </div>
                 </div>
               </Link>

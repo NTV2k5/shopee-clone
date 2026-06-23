@@ -3,13 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store';
 import { getImageUrl } from '@/lib/strapi';
-import Link from 'next/link';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Trash2, Store, ShoppingCart } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useTranslation } from '@/lib/i18n/useTranslation';
-
+import { useTranslations } from 'next-intl';
 export default function CartClient() {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations();
   const { items, updateQuantity, removeItem } = useCartStore();
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -118,7 +116,10 @@ export default function CartClient() {
                   />
                   <div className="flex flex-col justify-between">
                     <Link 
-                      href={i18n.language === 'vi' ? `/san-pham/${item.product.slug}` : `/products/${item.product.slug}`} 
+                      href={{
+                        pathname: '/products/[slug]',
+                        params: { slug: item.product.slug }
+                      }}
                       className="text-gray-800 font-medium hover:text-shopee-primary line-clamp-2"
                     >
                       {item.product.productName}
@@ -218,7 +219,7 @@ export default function CartClient() {
                // Proceed to checkout
                const queryParams = new URLSearchParams();
                queryParams.set('items', selectedItems.join(','));
-               router.push(`/checkout?${queryParams.toString()}`);
+               router.push(`/checkout?${queryParams.toString()}` as any);
              }}
              className={`w-52 h-10 flex items-center justify-center text-white font-medium rounded-sm transition ${
                selectedItems.length > 0 

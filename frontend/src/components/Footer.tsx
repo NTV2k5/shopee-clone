@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const t = useTranslations('footer');
 
   return (
     <footer className="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
@@ -13,32 +13,32 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 pb-12 border-b border-gray-200">
           {/* Customer Support */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('footer.customerSupport')}</h4>
+            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('customerSupport')}</h4>
             <ul className="text-xs text-gray-500 space-y-3">
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.helpCenter')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.blog')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.mall')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.buyGuide')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.payment')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.shipping')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('helpCenter')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('blog')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('mall')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('buyGuide')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('payment')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('shipping')}</li>
             </ul>
           </div>
 
           {/* About */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('footer.aboutShopee')}</h4>
+            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('aboutShopee')}</h4>
             <ul className="text-xs text-gray-500 space-y-3">
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.aboutIntro')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.careers')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.terms')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.privacyPolicy')}</li>
-              <li className="hover:text-shopee-primary cursor-pointer transition">{t('footer.mediaContact')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('aboutIntro')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('careers')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('terms')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('privacyPolicy')}</li>
+              <li className="hover:text-shopee-primary cursor-pointer transition">{t('mediaContact')}</li>
             </ul>
           </div>
 
           {/* Payments */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('footer.paymentMethods')}</h4>
+            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('paymentMethods')}</h4>
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-white p-2 border rounded shadow-sm flex items-center justify-center hover:shadow-md transition cursor-pointer">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
@@ -61,7 +61,7 @@ export default function Footer() {
 
           {/* Follow Us */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('footer.followUs')}</h4>
+            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('followUs')}</h4>
             <ul className="text-xs text-gray-500 space-y-3">
               <li className="flex items-center gap-2 hover:text-shopee-primary cursor-pointer transition">
                 <Facebook size={16} /> Facebook
@@ -77,7 +77,7 @@ export default function Footer() {
 
           {/* App Download */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('footer.downloadApp')}</h4>
+            <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider">{t('downloadApp')}</h4>
             <div className="flex gap-3">
               <div className="bg-white p-1 border rounded shadow-sm w-20 h-20 flex items-center justify-center hover:shadow-md transition cursor-pointer">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="QR Code" className="w-16 h-16" />
@@ -95,16 +95,16 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 text-center space-y-4">
-          <p className="text-xs text-gray-400">{t('footer.copyright')}</p>
+          <p className="text-xs text-gray-400">{t('copyright')}</p>
           <div className="flex justify-center gap-8 text-[10px] text-gray-400 uppercase tracking-widest font-semibold">
-            <span>{t('footer.privacyPolicyFooter')}</span>
-            <span>{t('footer.operatingRules')}</span>
-            <span>{t('footer.shippingPolicy')}</span>
-            <span>{t('footer.returnPolicy')}</span>
+            <span>{t('privacyPolicyFooter')}</span>
+            <span>{t('operatingRules')}</span>
+            <span>{t('shippingPolicy')}</span>
+            <span>{t('returnPolicy')}</span>
           </div>
           <div className="pt-8 text-xs text-gray-500 space-y-2">
-            <p>{t('footer.address')}</p>
-            <p>{t('footer.hotline')}</p>
+            <p>{t('address')}</p>
+            <p>{t('hotline')}</p>
           </div>
         </div>
       </div>

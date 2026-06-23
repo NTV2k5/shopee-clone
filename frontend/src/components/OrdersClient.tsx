@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { strapi, getImageUrl } from '@/lib/strapi';
 import { auth } from '@/lib/auth';
 import { useCartStore } from '@/lib/store';
-import Link from 'next/link';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Package,
   Clock,
@@ -45,7 +45,7 @@ interface Order {
 }
 
 export default function OrdersClient() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
